@@ -7,16 +7,6 @@ GIT
       activesupport (>= 4.2)
 
 GIT
-  remote: https://github.com/ManifoldScholar/shrine-tus.git
-  revision: 29ea77f3ae07b84168654c291b30c731a1c03814
-  branch: master
-  specs:
-    shrine-tus (2.1.0)
-      shrine (>= 3.0.0.rc, < 4)
-      shrine-url (~> 2.4)
-      tus-server (~> 2.0)
-
-GIT
   remote: https://github.com/scryptmouse/active_record_upsert.git
   revision: 2f1198db6a7753d69fa833312d645e582b89dcff
   ref: 2f1198d
@@ -599,6 +589,10 @@ GEM
     shrine (3.2.2)
       content_disposition (~> 1.0)
       down (~> 5.1)
+    shrine-tus (2.1.1)
+      shrine (~> 3.2)
+      shrine-url (~> 2.4)
+      tus-server (~> 2.0)
     shrine-url (2.4.0)
       down (~> 5.0)
       http (>= 3.2, < 5)
@@ -821,7 +815,7 @@ DEPENDENCIES
   scenic (~> 1.4)
   searchkick (~> 2.0)
   shrine (~> 3.2.0)
-  shrine-tus!
+  shrine-tus (~> 2.0)
   sidekiq (~> 5.0)
   signet (~> 0.8.0)
   simplecov
