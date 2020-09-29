@@ -20,6 +20,10 @@ class AttachmentUploader < Shrine
     Attachments::ProcessAttachmentJob.perform_later(self.class.name, record.class.name, record.id, name, file_data)
   end
 
+  Attacher.destroy_block do
+    Attachments::DestroyAttachmentJob.perform_later(self.class.name, data)
+  end
+
   Attacher.validate do
     conf = record.shrine_configuration_for name
 
@@ -104,10 +108,6 @@ class AttachmentUploader < Shrine
 
         def #{@name}_original(&block)
           shrine_original_for #{@name.inspect}, &block
-        end
-
-        def #{@name}_original_path
-          #{@name}_original(&:local_path)
         end
 
         def #{@name}_meta

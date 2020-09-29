@@ -23,6 +23,10 @@ module Attachments
       @versions ||= {}
     end
 
+    def local_source
+      @local_source ||= upload.respond_to?(:download) ? upload.download.open : upload.open
+    end
+
     def process_versions!
       styles.map do |key, value|
         version = process_version value
@@ -31,7 +35,7 @@ module Attachments
     end
 
     def process_version(config)
-      compose VersionProcessor, config: config, source: upload
+      compose VersionProcessor, config: config, local_source: local_source, attachment: upload
     end
 
     def styles

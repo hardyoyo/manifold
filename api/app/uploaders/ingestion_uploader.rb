@@ -2,8 +2,14 @@ class IngestionUploader < TusUploader
   include SharedUploader
 
   plugin :add_metadata
+  plugin :pretty_location
   plugin :determine_mime_type, analyzer: :marcel
   plugin :validation_helpers
+  plugin :backgrounding
+
+  Attacher.destroy_block do
+    Attachments::DestroyAttachmentJob.perform_later(self.class.name, data)
+  end
 
   add_metadata :sha256 do |io, context|
     calculate_signature(io, :sha256, format: :hex) if context[:action] == :cache
@@ -24,8 +30,9 @@ class IngestionUploader < TusUploader
         #{@name}&.original_filename
       end
 
-      def #{@name}_path
-        #{@name}&.to_io.path
+      def local_#{@name}_path
+        file = #{@name}&.respond_to?(:download) ? #{@name}.download : #{@name}&.open
+        file&.path
       end
       RUBY
     end

@@ -5,6 +5,11 @@ class ArchiveUploader < Shrine
   plugin :determine_mime_type, analyzer: :marcel
   plugin :pretty_location, class_underscore: true, identifier: :location_identifier
   plugin :validation_helpers
+  plugin :backgrounding
+
+  Attacher.destroy_block do
+    Attachments::DestroyAttachmentJob.perform_later(self.class.name, data)
+  end
 
   add_metadata :sha256 do |io, context|
     calculate_signature(io, :sha256, format: :hex) if context[:action] == :cache
