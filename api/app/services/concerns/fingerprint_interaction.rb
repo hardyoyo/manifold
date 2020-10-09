@@ -6,6 +6,12 @@ module Concerns
     include Concerns::MonadicInteraction
     include Fingerprints
 
+    DEFAULT_DIGEST = proc do
+      Digest::SHA512.new.tap do |digest|
+        digest << Settings.manifold_version.to_s
+      end
+    end
+
     JSONISH = Dux[:to_json].freeze
 
     included do
@@ -13,7 +19,7 @@ module Concerns
 
       haltable!
 
-      object :digest, class: "Digest::SHA512", default: proc { Digest::SHA512.new }
+      object :digest, class: "Digest::SHA512", default: DEFAULT_DIGEST
 
       boolean :nested, default: false
       boolean :raw, default: false
@@ -71,7 +77,11 @@ module Concerns
     # @param [Class] with the interaction to use (can be derived per {Fingerprints#derive_fingerprint_interaction_for})
     # @return [void]
     def calculate_fingerprints_for!(models, as: nil, with: nil)
+      models.reload if models.respond_to?(:reload)
+
       models.each do |model|
+        model.reload unless models.respond_to?(:reload)
+
         calculate_fingerprint_for! model, as: as, with: with
       end
     end
